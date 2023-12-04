@@ -7,7 +7,7 @@ import Asks from "../Components/Asks";
 import SetAsk from "../Components/SetAsk";
 import Bids from "../Components/Bids";
 import { usePrepareContractWrite, useContractWrite, useNetwork, useSwitchNetwork, useContractRead, useAccount } from "wagmi";
-import ETCeriaMarketplace_ABI from "../abi/ETCeria_marketplace_ABI.json";
+import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
 

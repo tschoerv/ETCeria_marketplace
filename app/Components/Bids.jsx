@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useContractRead, useContractReads, useAccount } from 'wagmi'
-import ETCeriaMarketplace_ABI from "../abi/ETCeria_marketplace_ABI.json";
+import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link } from "@nextui-org/react";
 

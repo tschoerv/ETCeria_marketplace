@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { Button, Input } from "@nextui-org/react";
 import { useContractRead, useContractReads } from 'wagmi'
 import { usePrepareContractWrite, useContractWrite, useWaitForTransaction } from "wagmi";
-import ETCeriaMarketplace_ABI from "../abi/ETCeria_marketplace_ABI.json";
-import allTileCoordinatesWithIndices from "../abi/allTileCoordinatesWithIndices.json";
-import mapInfo from "../abi/mapInfo.json"
+import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
+import allTileCoordinatesWithIndices from "../ABI/allTileCoordinatesWithIndices.json";
+import mapInfo from "../ABI/mapInfo.json"
 import { ethers } from 'ethers';
 import { useAccount } from 'wagmi';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";

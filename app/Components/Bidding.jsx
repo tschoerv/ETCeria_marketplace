@@ -4,7 +4,7 @@ import { Button, Input } from "@nextui-org/react";
 import DropdownMenu from "../Components/DropdownMenu";
 import RangeSlider from "../Components/RangeSlider";
 import { usePrepareContractWrite, useContractWrite, useWaitForTransaction, useContractRead, useAccount } from "wagmi";
-import ETCeriaMarketplace_ABI from "../abi/ETCeria_marketplace_ABI.json";
+import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 
 

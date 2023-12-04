@@ -1,10 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useContractRead } from 'wagmi'
-import ETCeriaMarketplace_ABI from "../abi/ETCeria_marketplace_ABI.json";
+import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link } from "@nextui-org/react";
-import allTileCoordinatesWithIndices from "../abi/allTileCoordinatesWithIndices.json";
+import allTileCoordinatesWithIndices from "../ABI/allTileCoordinatesWithIndices.json";
 
 const columns = [
     { key: 'owner', label: 'Owner' },

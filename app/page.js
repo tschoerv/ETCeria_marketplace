@@ -1,113 +1,84 @@
-import Image from 'next/image'
+'use client'
+import Head from 'next/head';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react'
 
 export default function Home() {
+const [flexDirection, setFlexDirection] = useState('row'); // default to row
+
+useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth >= 769) {
+      setFlexDirection('row'); // large screens
+    } else {
+      setFlexDirection('column'); // smaller screens
+    }
+  };
+
+  // Add event listener
+  window.addEventListener('resize', handleResize);
+
+  // Call handler to set initial state
+  handleResize();
+
+  // Cleanup
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <div>
+      <Head>
+        <title>ETCeria Home</title>
+        <meta
+          content="made by tschoerv.eth"
+          name="description"
         />
+        <link href="/favicon.ico" rel="icon" />
+      </Head>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'space-between' }}>
+        <div className='main'>
+          <h1 className='text-lg ml-1 mr-1'>
+            First unique set of digital collectibles on Ethereum Classic
+          </h1>
+
+          <div style={{ display: 'flex', flexDirection: flexDirection, alignItems: 'center', margin: '0 20px' }}>
+            <Link className="card" href="/marketplace1pt1">
+              <h2>Marketplace v1.1 &rarr;</h2>
+              <p>&nbsp;buy and sell ETCeria tiles</p>
+            </Link>
+
+            <Link className="card" href="/marketplace1pt2">
+              <h2>Marketplace v1.2 &rarr;</h2>
+              <p>&nbsp;buy and sell ETCeria tiles</p>
+            </Link>
+          </div>
+
+          <div className="faq">
+            <h1 style={{ textAlign: 'center' }} className='text-xl font-bold'>FAQ</h1>
+            <h2 className='faqMarginAdjust'>What is ETCeria?</h2>
+            <p>ETCeria is the first unique set of digital collectables on Ethereum Classic, notable for its launch before the DAO hack and subsequent Ethereum fork in 2016. Initially underrecognized, the project gained traction when its contract was rediscovered and fully minted out on August 23, 2021.</p>
+            <h2>What are ETCeria tiles?</h2>
+            <p>ETCeria tiles are part of a digital landscape, comprising a 32x32 grid of hexagon-shaped tiles with varied elevation levels. 457 of these tiles are designated as ownable land. The elevation attribute of each tile on the map determines whether it is a water or land tile. All land tiles are freely tradable on the marketplace, offering a unique opportunity for collectors and enthusiasts.</p>
+            <h2>Why are there two versions (v1.1 & v1.2)?</h2>
+            <p>In 2015, due to the low cost of ETH and gas, it was common to test contracts directly on the mainnet. This practice led to the creation of several versions of ETCeria on Ethereum Classic, but most of which had significant flaws and cannot be used safely. There are two additional functional versions of ETCeria, namely v0.9 and v1.0. Unfortunately, all tiles from these earlier versions are currently owned by a handful wallets.</p>
+            <h2>Why is there no map explorer?</h2>
+            <p>Currently, there is no dedicated map explorer for ETCeria, primarily due to the lack of community effort in building one. However, we now have a decentralized marketplace that enables trustless trading of these digital artifacts as a first step. I'm hopeful that as our community grows, we'll eventually add features like a map explorer and building on tiles.
+
+            </p>
+            <h2>Why is there no wrapper?</h2>
+            <p>There is a significant design flaw in the setOwner() function of ETCeria, preventing tiles from being owned by a smart contract. If ETCeria tiles are sent to a smart contract address, they are effectively lost and irretrievable. Hence ETCeria tiles can only be transferred and traded in their native form.</p>
+            <h2>How can I contribute?</h2>
+            <p>If you're interested in contributing to the ETCeria project, please reach out to me via Twitter or Discord (@tschoerv). Additionally, please consider donating a portion of your profits from using the marketplace. Together, we can explore and build upon the exciting possibilities of ETCeria!</p>
+          </div>
+
+        </div>
+
+        <footer className="footerHome">
+          <div><p>
+            Made for you with ❤️ by tschoerv.eth - donations welcome
+          </p></div>
+        </footer>
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   )
 }

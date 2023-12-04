@@ -12,7 +12,7 @@ import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
 
 
-export default function marketplace1pt1() {
+export default function Marketplace1pt2() {
 
   const [withdrawableFunds, setWithdrawableFunds] = useState("");
   const [ownerList, setOwnerList] = useState([]);

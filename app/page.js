@@ -62,13 +62,11 @@ useEffect(() => {
             <h2>Why are there two versions (v1.1 & v1.2)?</h2>
             <p>In 2015, due to the low cost of ETH and gas, it was common to test contracts directly on the mainnet. This practice led to the creation of several versions of ETCeria on Ethereum Classic, but most of which had significant flaws and cannot be used safely. There are two additional functional versions of ETCeria, namely v0.9 and v1.0. Unfortunately, all tiles from these earlier versions are currently owned by a handful wallets.</p>
             <h2>Why is there no map explorer?</h2>
-            <p>Currently, there is no dedicated map explorer for ETCeria, primarily due to the lack of community effort in building one. However, we now have a decentralized marketplace that enables trustless trading of these digital artifacts as a first step. I'm hopeful that as our community grows, we'll eventually add features like a map explorer and building on tiles.
-
-            </p>
+            <p>Currently, there is no dedicated map explorer for ETCeria, primarily due to the lack of community effort in building one. However, we now have a decentralized marketplace that enables trustless trading of these digital artifacts as a first step. I&apos;m hopeful that as our community grows, we&apos;ll eventually add features like a map explorer and building on tiles.</p>
             <h2>Why is there no wrapper?</h2>
             <p>There is a significant design flaw in the setOwner() function of ETCeria, preventing tiles from being owned by a smart contract. If ETCeria tiles are sent to a smart contract address, they are effectively lost and irretrievable. Hence ETCeria tiles can only be transferred and traded in their native form.</p>
             <h2>How can I contribute?</h2>
-            <p>If you're interested in contributing to the ETCeria project, please reach out to me via Twitter or Discord (@tschoerv). Additionally, please consider donating a portion of your profits from using the marketplace. Together, we can explore and build upon the exciting possibilities of ETCeria!</p>
+            <p>If you&apos;re interested in contributing to the ETCeria project, please reach out to me via Twitter or Discord (@tschoerv). Additionally, please consider donating a portion of your profits from using the marketplace. Together, we can explore and build upon the exciting possibilities of ETCeria!</p>
           </div>
 
         </div>

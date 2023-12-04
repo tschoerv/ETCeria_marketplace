@@ -133,4 +133,6 @@ const RangeSlider = forwardRef(({ initialMin, initialMax, min, max, step, priceC
   );
 });
 
+RangeSlider.displayName = 'RangeSlider';
+
 export default RangeSlider;

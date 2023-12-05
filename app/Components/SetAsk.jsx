@@ -277,7 +277,6 @@ export default function SetAsk({ ownerList, setOwnerList, refreshAsksList, setRe
         </DropdownTrigger>
         <DropdownMenu aria-label="Dynamic Actions" items={ownedTiles}
           variant="flat"
-          type="listbox"
           disallowEmptySelection
           selectionMode="single"
           selectedKeys={selectedTile}

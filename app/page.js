@@ -2,9 +2,19 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router';
 
 export default function Home() {
 const [flexDirection, setFlexDirection] = useState('row'); // default to row
+
+const router = useRouter();
+
+  useEffect(() => {
+    const lastPath = localStorage.getItem('lastPath');
+    if (lastPath && lastPath !== '/') {
+      router.push(lastPath);
+    }
+  }, [router]);
 
 useEffect(() => {
   const handleResize = () => {

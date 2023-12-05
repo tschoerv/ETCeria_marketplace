@@ -10,6 +10,7 @@ import { usePrepareContractWrite, useContractWrite, useNetwork, useSwitchNetwork
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
+import { useRouter } from 'next/router';
 
 export default function Marketplace1pt2() {
 
@@ -31,18 +32,11 @@ export default function Marketplace1pt2() {
 
   const desiredNetworkId = 61; // Chain ID for Ethereum Classic
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered: ', registration);
-        })
-        .catch(registrationError => {
-          console.log('Service Worker registration failed: ', registrationError);
-        });
-    }
-  }, []);
+  const router = useRouter();
 
+  useEffect(() => {
+    localStorage.setItem('lastPath', router.asPath);
+  }, [router]);
 
   useEffect(() => {
     document.title = 'ETCeria Marketplace v1.2';

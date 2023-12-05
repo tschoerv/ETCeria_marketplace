@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import Head from 'next/head';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Bidding from "../Components/Bidding";
 import Asks from "../Components/Asks";
@@ -10,6 +9,7 @@ import { usePrepareContractWrite, useContractWrite, useNetwork, useSwitchNetwork
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
+import { useRouter } from 'next/router';
 
 
 export default function Marketplace1pt1() {
@@ -23,6 +23,7 @@ export default function Marketplace1pt1() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [isClientSide, setIsClientSide] = useState(false);
 
+
   const ETCeriaMP1pt1_address = process.env.NEXT_PUBLIC_ETCERIA_MARKETPLACE_ADDRESS_V1PT1;
 
   const { address, isConnected } = useAccount();
@@ -32,18 +33,11 @@ export default function Marketplace1pt1() {
 
   const desiredNetworkId = 61; // Chain ID for Ethereum Classic
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered: ', registration);
-        })
-        .catch(registrationError => {
-          console.log('Service Worker registration failed: ', registrationError);
-        });
-    }
-  }, []);
+  const router = useRouter();
 
+  useEffect(() => {
+    localStorage.setItem('lastPath', router.asPath);
+  }, [router]);
 
   useEffect(() => {
     document.title = 'ETCeria Marketplace v1.1';

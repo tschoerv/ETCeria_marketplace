@@ -11,7 +11,6 @@ import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
 
 
-
 export default function Marketplace1pt1() {
 
   const [withdrawableFunds, setWithdrawableFunds] = useState("");
@@ -30,10 +29,7 @@ export default function Marketplace1pt1() {
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
-
-  useEffect(() => {
-    localStorage.setItem('lastPath', router.asPath);
-  }, [router]);
+  const desiredNetworkId = 61; // Chain ID for Ethereum Classic
 
   useEffect(() => {
     document.title = 'ETCeria Marketplace v1.1';

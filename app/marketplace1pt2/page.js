@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import Head from 'next/head';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Bidding from "../Components/Bidding";
 import Asks from "../Components/Asks";

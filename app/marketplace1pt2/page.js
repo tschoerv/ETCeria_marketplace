@@ -124,9 +124,9 @@ export default function Marketplace1pt2() {
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} className="componentBackground1 m-4 p-6 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
             {isClientSide && (
           <>
-            {chain?.id !== desiredNetworkId ?
-              <ConnectButton chainStatus="none" showBalance={false}/> : 
-              <Button variant="solid" color="danger" onClick={handleSwitchNetwork}>Switch to Ethereum Classic</Button>
+            {chain?.id !== desiredNetworkId && isConnected ?
+               <Button variant="solid" color="danger" onClick={handleSwitchNetwork}>Switch to Ethereum Classic</Button> : 
+              <ConnectButton chainStatus="none" showBalance={false}/>
              }
           </>
         )}

@@ -160,7 +160,7 @@ export default function Marketplace1pt1() {
         <div><Link isExternal color="secondary" href={`https://etc.blockscout.com/address/${ETCeriaMP1pt1_address}`}>
           ETCeria v1.1 Marketplace Contract</Link></div>
         <div><p>
-          Made for you with ❤️ by <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>tschoerv.eth</Link> - donations welcome
+        <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>Made</Link> for you with ❤️ by tschoerv.eth - donations welcome
         </p></div>
       </footer>
     </div>

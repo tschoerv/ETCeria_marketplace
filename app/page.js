@@ -33,7 +33,7 @@ useEffect(() => {
           content="made by tschoerv.eth"
           name="description"
         />
-        <link href="./favicon.ico" rel="icon" />
+        <link href="/favicon.ico" rel="icon" />
       </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'space-between' }}>
         <div className='main'>

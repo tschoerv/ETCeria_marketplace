@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       <div className={"logo"}>
       <Link href="/">
           <Image
-      src="./logo.png"
+      src="/logo.png"
       width={450}
       height={244}
       alt="logo"

@@ -112,7 +112,7 @@ export default function Marketplace1pt1() {
 
       <Head>
         <meta content="made by tschoerv.eth" name="description" />
-        <link href="./favicon.ico" rel="icon" />
+        <link href="/favicon.ico" rel="icon" />
       </Head>
 
       <div>

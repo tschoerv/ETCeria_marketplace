@@ -11,7 +11,6 @@ import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
 
-
 export default function Marketplace1pt2() {
 
   const [withdrawableFunds, setWithdrawableFunds] = useState("");
@@ -63,6 +62,7 @@ export default function Marketplace1pt2() {
     functionName: 'pendingWithdrawalOf',
     args: [address],
     watch: true,
+    enabled: isConnected,
   });
 
   useEffect(() => {
@@ -109,12 +109,6 @@ export default function Marketplace1pt2() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'space-between' }} >
-
-      <Head>
-        <meta content="made by tschoerv.eth" name="description" />
-        <link href="/favicon.ico" rel="icon" />
-      </Head>
-
       <div>
         <div className='marktplaceTitle'>
           <h1 className='text-center text-2xl'>Marketplace v1.2</h1>
@@ -130,10 +124,10 @@ export default function Marketplace1pt2() {
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} className="componentBackground1 m-4 p-6 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
             {isClientSide && (
           <>
-            {chain?.id !== desiredNetworkId && (
+            {chain?.id !== desiredNetworkId ?
+              <ConnectButton chainStatus="none" showBalance={false}/> : 
               <Button variant="solid" color="danger" onClick={handleSwitchNetwork}>Switch to Ethereum Classic</Button>
-            )}
-            <ConnectButton chainStatus="none" showBalance={false} />
+             }
           </>
         )}
               {withdrawableFunds > 0 && isConnected ?

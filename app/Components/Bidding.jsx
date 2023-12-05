@@ -71,6 +71,7 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
     functionName: 'bidOf',
     args: [address],
     watch: true,
+    enabled: isConnected,
     onSuccess(_bidOf) {
       setBidOf(_bidOf)
     },

@@ -9,7 +9,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "ETCeria Home",
   description: "made by tschoerv.eth",
+  icons: {
+    icon: '/favicon.ico', // /public path
+  },
 };
+
 
 export default function RootLayout({ children }) {
   return (

@@ -9,7 +9,7 @@ import { usePrepareContractWrite, useContractWrite, useNetwork, useSwitchNetwork
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
-import { useRouter } from 'next/router';
+
 
 
 export default function Marketplace1pt1() {
@@ -23,7 +23,6 @@ export default function Marketplace1pt1() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [isClientSide, setIsClientSide] = useState(false);
 
-
   const ETCeriaMP1pt1_address = process.env.NEXT_PUBLIC_ETCERIA_MARKETPLACE_ADDRESS_V1PT1;
 
   const { address, isConnected } = useAccount();
@@ -31,9 +30,6 @@ export default function Marketplace1pt1() {
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
-  const desiredNetworkId = 61; // Chain ID for Ethereum Classic
-
-  const router = useRouter();
 
   useEffect(() => {
     localStorage.setItem('lastPath', router.asPath);

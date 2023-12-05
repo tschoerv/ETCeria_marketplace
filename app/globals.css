@@ -124,6 +124,11 @@ body {
   margin: auto;
 }
 
+.scrollable-dropdown-menu {
+  max-height: 250px; /* Adjust the height as needed */
+  overflow-y: auto;
+}
+
 .componentBackground1 {
   background-color: #999999dc;
 }

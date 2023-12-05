@@ -36,9 +36,14 @@ export default function Asks({ ownerList, refreshAsksList, marketplaceContract }
                 row: allTileCoordinatesWithIndices[index].row,
                 ask: ethers.formatEther(ask)
             };
-        }).filter(tile => tile.ask > 0)
-            .sort((a, b) => parseFloat(a.ask) - parseFloat(b.ask))); // Sort in ascending order
+        }).filter(tile => tile.ask > 0 && tile.owner) // Check for valid ask and owner
+        .sort((a, b) => parseFloat(a.ask) - parseFloat(b.ask)));
     }, [ownerList, refreshAsksList, allAsks])
+
+    useEffect(() => {
+        console.log(tileAskList)
+    }, [tileAskList])
+
 
     return (
         <div>
@@ -49,7 +54,7 @@ export default function Asks({ ownerList, refreshAsksList, marketplaceContract }
                 </TableHeader>
                 <TableBody emptyContent={"No asks available."} items={tileAskList}>
                     {(item, index) => (
-                        <TableRow className='text-left' key={`${item.owner}-${index}`}>
+                        <TableRow className='text-left' key={`${item.col}-${item.row}-${index}`}>
                             {columns.map(column => (
                                 <TableCell key={column.key}>
                                     {column.key === 'tile' ? `${item.col},${item.row}` :

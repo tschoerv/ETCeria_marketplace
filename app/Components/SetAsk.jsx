@@ -280,7 +280,8 @@ export default function SetAsk({ ownerList, setOwnerList, refreshAsksList, setRe
           disallowEmptySelection
           selectionMode="single"
           selectedKeys={selectedTile}
-          onSelectionChange={setSelectedTile}>
+          onSelectionChange={setSelectedTile}
+          className="scrollable-dropdown-menu">
           {(tile) => (
             <DropdownItem
               key={[tile.col, tile.row]}>

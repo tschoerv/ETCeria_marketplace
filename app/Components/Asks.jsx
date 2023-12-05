@@ -30,8 +30,14 @@ export default function Asks({ ownerList, refreshAsksList, marketplaceContract }
 
     useEffect(() => {
         setTileAskList(allAsks.map((ask, index) => {
-            return { owner: ownerList[index], col: allTileCoordinatesWithIndices[index].col, row: allTileCoordinatesWithIndices[index].row, ask: ethers.formatEther(ask) };
-        }).filter(tile => tile.ask > 0));
+            return {
+                owner: ownerList[index],
+                col: allTileCoordinatesWithIndices[index].col,
+                row: allTileCoordinatesWithIndices[index].row,
+                ask: ethers.formatEther(ask)
+            };
+        }).filter(tile => tile.ask > 0)
+            .sort((a, b) => parseFloat(a.ask) - parseFloat(b.ask))); // Sort in ascending order
     }, [ownerList, refreshAsksList, allAsks])
 
     return (

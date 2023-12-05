@@ -32,6 +32,18 @@ export default function Marketplace1pt1() {
 
   const desiredNetworkId = 61; // Chain ID for Ethereum Classic
 
+  useEffect(() => {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('Service Worker registration failed: ', registrationError);
+        });
+    }
+  }, []);
+
 
   useEffect(() => {
     document.title = 'ETCeria Marketplace v1.1';

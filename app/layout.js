@@ -4,7 +4,6 @@ import Providers from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +18,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Script src="/app/Scripts/registerServiceWorker.js" strategy="afterInteractive" />
       <body className={inter.className}>
         <div className={"logo"}>
           <Link href="/">

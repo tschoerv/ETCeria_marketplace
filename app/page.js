@@ -55,7 +55,7 @@ useEffect(() => {
             <h2>What are ETCeria tiles?</h2>
             <p>ETCeria tiles are part of a digital landscape, comprising a 32x32 grid of hexagon-shaped tiles with varied elevation levels. 457 of these tiles are designated as ownable land. The elevation attribute of each tile on the map determines whether it is a water or land tile. All land tiles are freely tradable on the marketplace, offering a unique opportunity for collectors and enthusiasts.</p>
             <h2>Why are there two versions (v1.1 & v1.2)?</h2>
-            <p>In 2015, due to the low cost of ETH and gas, it was common to test contracts directly on the mainnet. This practice led to the creation of several versions of ETCeria on Ethereum Classic, but most of which had significant flaws and cannot be used safely. There are two additional functional versions of ETCeria, namely v0.9 and v1.0. Unfortunately, all tiles from these earlier versions are currently owned by a handful wallets.</p>
+            <p>In 2015, due to the low cost of ETH and gas, it was common to test contracts directly on the mainnet. This practice led to the creation of several versions of ETCeria on Ethereum Classic, but most of which had significant flaws and cannot be used safely. There are two additional functional versions of ETCeria, namely v0.9 and v1.0. Unfortunately, all tiles from these earlier versions are currently owned by a handful of wallets.</p>
             <h2>Why is there no map explorer?</h2>
             <p>Currently, there is no dedicated map explorer for ETCeria, primarily due to the lack of community effort in building one. However, we now have a decentralized marketplace that enables trustless trading of these digital artifacts as a first step. I&apos;m hopeful that as our community grows, we&apos;ll eventually add features like a map explorer and building on tiles.</p>
             <h2>Why is there no wrapper?</h2>
@@ -68,7 +68,7 @@ useEffect(() => {
 
         <footer className="footerHome">
           <div><p>
-            Made for you with ❤️ by tschoerv.eth - donations welcome
+          Made for you with ❤️ by <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>tschoerv.eth</Link> - donations welcome
           </p></div>
         </footer>
       </div>

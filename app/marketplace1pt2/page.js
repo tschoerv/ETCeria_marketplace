@@ -1,34 +1,37 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import SetAsk from "../Components/SetAsk";
 import Bidding from "../Components/Bidding";
 import Asks from "../Components/Asks";
-import SetAsk from "../Components/SetAsk";
 import Bids from "../Components/Bids";
-import { usePrepareContractWrite, useContractWrite, useNetwork, useSwitchNetwork, useContractRead, useAccount } from "wagmi";
+import LastSales from "../Components/LastSales";
+import { useWriteContract, useWaitForTransactionReceipt, useSimulateContract, useSwitchChain, useAccount, useReadContract } from "wagmi";
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
-import { ethers } from 'ethers';
 import { Link, Button } from "@nextui-org/react";
+import { useQueryClient } from '@tanstack/react-query'
+import { useQueryTrigger } from '../QueryTriggerContext';
+import Web3 from "web3";
+import Image from 'next/image';
 
 
 export default function Marketplace1pt2() {
 
+  const { queryTrigger, toggleQueryTrigger } = useQueryTrigger();
+
   const [withdrawableFunds, setWithdrawableFunds] = useState("");
   const [ownerList, setOwnerList] = useState([]);
-  const [refreshAsksList, setRefreshAsksList] = useState(0);
-  const [refreshBidsList, setRefreshBidsList] = useState(0);
   const [bidTableList, setBidTableList] = useState([]);
   const [flexDirection, setFlexDirection] = useState('row'); // default to row
   const [isDisabled, setIsDisabled] = useState(false);
   const [isClientSide, setIsClientSide] = useState(false);
+  const queryClient = useQueryClient()
 
   const ETCeriaMP1pt2_address = process.env.NEXT_PUBLIC_ETCERIA_MARKETPLACE_ADDRESS_V1PT2;
 
-  const { address, isConnected } = useAccount();
+  const { isConnected, chain, address } = useAccount();
 
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-
+  const { switchChain } = useSwitchChain();
   const desiredNetworkId = 61; // Chain ID for Ethereum Classic
 
   useEffect(() => {
@@ -39,53 +42,57 @@ export default function Marketplace1pt2() {
     setIsClientSide(true); // Set to true once the component has mounted on the client
   }, []);
 
-  const handleSwitchNetwork = () => {
-    if (switchNetwork) {
-      switchNetwork(desiredNetworkId);
-    }
+  const handleSwitchChain = () => {
+    switchChain({ chainId: desiredNetworkId });
   };
 
   useEffect(() => {
-    if(chain?.id !== desiredNetworkId){
+    if (chain?.id !== desiredNetworkId) {
       setIsDisabled(true);
     }
-    else{
+    else {
       setIsDisabled(false);
     }
   }, [chain]);
-  
 
-  const { data: _withdrawableFunds } = useContractRead({
+
+  const { data: readWithdrawableFunds, isSuccess: isSuccessReadWithdrawableFunds, queryKey: withdrawableFundsQueryKey } = useReadContract({
     address: ETCeriaMP1pt2_address,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'pendingWithdrawalOf',
     args: [address],
-    watch: true,
-    enabled: isConnected,
   });
 
   useEffect(() => {
-
-    if (_withdrawableFunds >= 0) {
-      const formattedFunds = ethers.formatEther(_withdrawableFunds);
-      if (formattedFunds == "0.0") {
-        setWithdrawableFunds(0);
-      }
-      else {
-        setWithdrawableFunds(parseFloat(formattedFunds).toFixed(1));
-      }
+    if (isSuccessReadWithdrawableFunds) {
+      setWithdrawableFunds((Math.floor(Number(Web3.utils.fromWei(readWithdrawableFunds, 'ether')) * 10) / 10).toFixed(1));
     }
-  }, [_withdrawableFunds, address]);
+  }, [readWithdrawableFunds, isSuccessReadWithdrawableFunds]);
 
-
-  const { config: _withdraw } = usePrepareContractWrite({
+  const { data: simulateWithdraw } = useSimulateContract({
     address: ETCeriaMP1pt2_address,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'withdraw',
-    enabled: withdrawableFunds > 0 && withdrawableFunds != undefined,
-  })
+  });
+  const { writeContract: withdraw, data: withdrawHash } = useWriteContract();
 
-  const { write: _withdrawFunds } = useContractWrite(_withdraw)
+  const { isSuccess: withdrawConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: withdrawHash,
+    })
+
+  useEffect(() => {
+    if (withdrawConfirmed) {
+      toggleQueryTrigger();
+    }
+  }, [withdrawConfirmed]);
+
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ withdrawableFundsQueryKey })
+  }, [queryTrigger]);
+
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -108,6 +115,17 @@ export default function Marketplace1pt2() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'space-between' }} >
+      <div className={"logo"}>
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            width={450}
+            height={244}
+            alt="logo"
+            priority={true}
+          />
+        </Link>
+      </div>
       <div>
         <div className='marktplaceTitle'>
           <h1 className='text-center text-2xl'>Marketplace v1.2</h1>
@@ -118,49 +136,45 @@ export default function Marketplace1pt2() {
         <div style={{ display: 'flex', flexDirection: flexDirection, justifyContent: 'center', alignItems: 'center' }}>
 
           {/* Left column: Centered stack and SetAsk */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0 20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className='md:mr-2 mr-0'>
             {/* Centered stack */}
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} className="componentBackground1 m-4 p-6 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
-            {isClientSide && (
-          <>
-            {chain?.id !== desiredNetworkId && isConnected ?
-               <Button variant="solid" color="danger" onClick={handleSwitchNetwork}>Switch to Ethereum Classic</Button> : 
-              <ConnectButton chainStatus="none" showBalance={false}/>
-             }
-          </>
-        )}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} className="componentBackground1 m-3 p-6 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
+              {isClientSide && (
+                <>
+                  {chain?.id !== desiredNetworkId && isConnected ?
+                    <Button variant="solid" color="danger" onClick={handleSwitchChain}>Switch to Ethereum Classic</Button> :
+                    <ConnectButton chainStatus="none" showBalance={false} />
+                  }
+                </>
+              )}
               {withdrawableFunds > 0 && isConnected ?
-                <Button variant="faded" onClick={() => _withdrawFunds?.()} className='mt-3'>Withdraw {withdrawableFunds} ETC</Button> :
+                <Button variant="faded" onClick={() => withdraw(simulateWithdraw?.request)} className='mt-3'>Withdraw {withdrawableFunds} ETC</Button> :
                 <Button variant="faded" isDisabled={true} className='mt-3'>Withdraw</Button>
               }
             </div>
-            {/* SetAsk component */}
-            <div style={{ marginTop: '20px' }} className="componentBackground2 m-4 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
-              <SetAsk ownerList={ownerList} setOwnerList={setOwnerList} refreshAsksList={refreshAsksList} setRefreshAsksList={setRefreshAsksList} refreshBidsList={refreshBidsList} setRefreshBidsList={setRefreshBidsList} bidTableList={bidTableList} marketplaceContract={ETCeriaMP1pt2_address} isDisabled={isDisabled} />
+            <div className="componentBackground2 md:m-3 m-0 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
+              <SetAsk ownerList={ownerList} setOwnerList={setOwnerList} bidTableList={bidTableList} marketplaceContract={ETCeriaMP1pt2_address} isDisabled={isDisabled} />
             </div>
           </div>
-
-          {/* Right column: Bidding */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="componentBackground3 m-4 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="componentBackground3 m-3 md:ml-2 ml-0 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
             <Bidding marketplaceContract={ETCeriaMP1pt2_address} isDisabled={isDisabled} />
           </div>
         </div>
-
-        {/* Centered Asks component */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-          <Asks ownerList={ownerList} refreshAsksList={refreshAsksList} marketplaceContract={ETCeriaMP1pt2_address} />
+        <div className='flex justify-center'>
+          <Asks ownerList={ownerList} marketplaceContract={ETCeriaMP1pt2_address} />
         </div>
-
-        {/* Centered Bids component */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-          <Bids refreshBidsList={refreshBidsList} tableList={bidTableList} setTableList={setBidTableList} marketplaceContract={ETCeriaMP1pt2_address} />
+        <div className='flex justify-center my-3'>
+          <Bids tableList={bidTableList} setTableList={setBidTableList} marketplaceContract={ETCeriaMP1pt2_address} />
+        </div>
+        <div className='flex justify-center mb-5'>
+          <LastSales marketplaceContract={ETCeriaMP1pt2_address} />
         </div>
       </div>
       <footer className={"footer"}>
         <div><Link isExternal color="secondary" href={`https://etc.blockscout.com/address/${ETCeriaMP1pt2_address}`}>
           ETCeria v1.2 Marketplace Contract</Link></div>
         <div><p>
-        <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>Made</Link> for you with ❤️ by tschoerv.eth - donations welcome
+          <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>Made</Link> by <Link isExternal color="secondary" href={`https://x.com/tschoerv`}>tschoerv.eth</Link> - donations welcome
         </p></div>
       </footer>
     </div>

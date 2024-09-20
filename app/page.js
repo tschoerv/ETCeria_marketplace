@@ -1,29 +1,30 @@
 'use client'
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react'
 
 export default function Home() {
-const [flexDirection, setFlexDirection] = useState('row'); // default to row
+  const [flexDirection, setFlexDirection] = useState('row'); // default to row
 
-useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth >= 769) {
-      setFlexDirection('row'); // large screens
-    } else {
-      setFlexDirection('column'); // smaller screens
-    }
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 769) {
+        setFlexDirection('row'); // large screens
+      } else {
+        setFlexDirection('column'); // smaller screens
+      }
+    };
 
-  // Add event listener
-  window.addEventListener('resize', handleResize);
+    // Add event listener
+    window.addEventListener('resize', handleResize);
 
-  // Call handler to set initial state
-  handleResize();
+    // Call handler to set initial state
+    handleResize();
 
-  // Cleanup
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div>
@@ -32,11 +33,20 @@ useEffect(() => {
       </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'space-between' }}>
         <div className='main'>
-          <h1 className='text-lg ml-1 mr-1'>
+          <div className={"logo"}>
+            <Image
+              src="/logo.png"
+              width={450}
+              height={244}
+              alt="logo"
+              priority={true}
+            />
+          </div>
+          <h1 className='text-lg ml-1 mr-1 mb-1'>
             First unique set of digital collectibles on Ethereum Classic
           </h1>
 
-          <div style={{ display: 'flex', flexDirection: flexDirection, alignItems: 'center', margin: '0 20px' }}>
+          <div style={{ display: 'flex', flexDirection: flexDirection, alignItems: 'center' }}>
             <Link className="card" href="/marketplace1pt1">
               <h2>Marketplace v1.1 &rarr;</h2>
               <p>&nbsp;buy and sell ETCeria tiles</p>
@@ -47,6 +57,10 @@ useEffect(() => {
               <p>&nbsp;buy and sell ETCeria tiles</p>
             </Link>
           </div>
+          <Link className="card" href="/tilemanager">
+            <h2>Tile Manager &rarr;</h2>
+            <p>&nbsp;transfer your ETCeria tiles</p>
+          </Link>
 
           <div className="faq">
             <h1 style={{ textAlign: 'center' }} className='text-xl font-bold'>FAQ</h1>
@@ -66,9 +80,9 @@ useEffect(() => {
 
         </div>
 
-        <footer className="footerHome">
+        <footer className="footer">
           <div><p>
-          <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>Made</Link> for you with ❤️ by tschoerv.eth - donations welcome
+            <Link isExternal color="secondary" href={`https://github.com/tschoerv/ETCeria_marketplace`}>Made</Link> by <Link isExternal color="secondary" href={`https://x.com/tschoerv`}>tschoerv.eth</Link> - donations welcome
           </p></div>
         </footer>
       </div>

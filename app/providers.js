@@ -1,55 +1,60 @@
 "use client";
+import '@rainbow-me/rainbowkit/styles.css';
+import {NextUIProvider} from '@nextui-org/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { cookieStorage, createStorage, http} from 'wagmi'
+import { useState, useEffect } from 'react'
+import { QueryTriggerProvider } from './QueryTriggerContext';
+import { defineChain } from 'viem'
 
-import React from "react";
-import {
-  RainbowKitProvider,
-  getDefaultWallets,
-  connectorsForWallets,
-} from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { classic } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+export const ethClassic = defineChain({
+  id: 61,
+  name: 'Ethereum Classic',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://etc.etcdesktop.com'] },
+  },
+  blockExplorers: {
+    default: { name: 'Blockscout', url: 'https://etc.blockscout.com/' },
+  },
+})
 
-const projectId = "ab628ff4db30a8e61d5345af74379bb0";
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [classic],
-  [publicProvider()]
-);
-
-const { wallets } = getDefaultWallets({
-  appName: "ETCeria Marketplace",
-  projectId,
-  chains,
+export const config = getDefaultConfig({
+  appName: 'ETCeria Marketplace',
+  projectId: 'ab628ff4db30a8e61d5345af74379bb0',
+  chains: [ ethClassic ],
+  storage: createStorage({
+    storage: cookieStorage
+  }),
+  transports: {
+    [ethClassic.id]: http()
+  },
 });
 
-const appInfo = {
-  appName: "ETCeria Marketplace",
-};
+const client = new QueryClient();
 
-const connectors = connectorsForWallets([
-  ...wallets
-]);
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-  webSocketPublicClient,
-});
+export function Providers({ children }) {
+  const [mounted, setMounted] = useState(false);
 
-const Providers = ({ children }) => {
+  useEffect(() => setMounted(true), []);
+
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider
-        chains={chains}
-        appInfo={appInfo}
-        modalSize="compact"
-      >
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={client}>
+        <RainbowKitProvider>
+        <NextUIProvider>
+        <QueryTriggerProvider>
+        <main>
+        {mounted && children}
+        </main>
+        </QueryTriggerProvider>
+        </NextUIProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
-};
-
-export default Providers;
+}

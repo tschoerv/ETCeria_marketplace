@@ -3,9 +3,11 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Button, Input } from "@nextui-org/react";
 import DropdownMenu from "../Components/DropdownMenu";
 import RangeSlider from "../Components/RangeSlider";
-import { usePrepareContractWrite, useContractWrite, useWaitForTransaction, useContractRead, useAccount } from "wagmi";
+import { useWriteContract, useWaitForTransactionReceipt, useSimulateContract, useAccount, useReadContract } from "wagmi";
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
+import { useQueryClient } from '@tanstack/react-query'
+import { useQueryTrigger } from '../QueryTriggerContext';
 
 
 const presetValues = {
@@ -23,13 +25,14 @@ const presetValues = {
   landlocked: [0, 32, 0, 32, 125, 216, 0, 0],
 };
 
+
 function arraysEqual(a, b) {
   if (a.length !== b.length) {
     return false;
   }
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) {
+    if (Number(a[i]) !== Number(b[i])) {
       return false;
     }
   }
@@ -62,27 +65,30 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
   const [isCustomSelection, setIsCustomSelection] = useState(false);
   const [renderSliderTrigger, setRenderSliderTrigger] = useState(0);
 
+  const { queryTrigger, toggleQueryTrigger } = useQueryTrigger();
+  const queryClient = useQueryClient()
 
   const { address, isConnected } = useAccount();
 
-  const { data: _bidOf } = useContractRead({
+  const { data: bidOfData, isSuccess: isSuccessBidOfData, queryKey: bidOfDataQueryKey } = useReadContract({
     address: marketplaceContract,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'bidOf',
     args: [address],
-    watch: true,
-    enabled: isConnected,
-    onSuccess(_bidOf) {
-      setBidOf(_bidOf)
-    },
   });
+
+  useEffect(() => {
+    if (isSuccessBidOfData) {
+      setBidOf(bidOfData)
+    }
+  }, [bidOfData, isSuccessBidOfData]);
 
   useEffect(() => {
     if (bidOf && bidOf[0] == 0) {
       setHasActiveBid(false);
     } else if (bidOf && bidOf[0] > 0) {
 
-      const presetInfo = bidOf.slice(1, 9);
+      const presetInfo = bidOf.slice(1, 9).map(item => Number(item));
       if (arraysEqual(presetInfo, presetValues.global)) {
         setBidPreset("Global")
       }
@@ -135,6 +141,10 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
     }
 
   }, [bidOf, address]);
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ bidOfDataQueryKey })
+  }, [queryTrigger, address]);
 
   const handlePresetChange = (newPreset) => {
     if (isCustomSelection) {
@@ -270,32 +280,41 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
     setIsCustomSelection(true);
   };
 
-  const { config: bidConfig } = usePrepareContractWrite({
+  const { data: simulateBid } = useSimulateContract({
     address: marketplaceContract,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'makeBid',
     value: ethers.parseEther(bid.toString()).toString(),
     args: [column.current?.getMin(), column.current?.getMax(), row.current?.getMin(), row.current?.getMax(), elevation.current?.getMin(), elevation.current?.getMax(), water.current?.getMin(), water.current?.getMax()],
-    enabled: (!hasActiveBid),
-  })
+  });
+  const { writeContract: _makeBid, data: makeBidHash } = useWriteContract();
 
-  const { write: _makeBid } = useContractWrite(bidConfig)
+  const { isSuccess: makeBidConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: makeBidHash,
+    })
 
-  const { config: cancelBidConfig } = usePrepareContractWrite({
+  useEffect(() => {
+    if (makeBidConfirmed) {
+      toggleQueryTrigger();
+    }
+  }, [makeBidConfirmed]);
+
+  const { data: simulateCancelBid } = useSimulateContract({
     address: marketplaceContract,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'cancelBid',
-    enabled: hasActiveBid
-  })
+  });
+  const { writeContract: _cancelBid, data: cancelBidHash } = useWriteContract();
 
-  const { write: _cancelBid, data: cancelBidData } = useContractWrite(cancelBidConfig)
-
-  const { data: waitForCancelConfirmation } = useWaitForTransaction({
-    hash: cancelBidData?.hash,
-  })
+  const { isSuccess: cancelBidConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: cancelBidHash,
+    })
 
   useEffect(() => {
-    if (waitForCancelConfirmation != null) {
+    if (cancelBidConfirmed) {
+      toggleQueryTrigger();
       setPresetColumnMin(0);
       setPresetColumnMax(32);
       setPresetRowMin(0);
@@ -306,9 +325,7 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
       setPresetWaterMax(6);
       setRenderSliderTrigger(renderSliderTrigger + 1);
     }
-
-
-  }, [waitForCancelConfirmation])
+  }, [cancelBidConfirmed]);
 
   return (
     <div className='flex flex-col items-center bg-inherit p-6 rounded-lg'>
@@ -383,6 +400,7 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
           labelPlacement="inside"
           size="lg"
           variant="faded"
+          value = {activeBid}
           endContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 ">ETC</span>
@@ -416,7 +434,7 @@ export default function Bidding({ marketplaceContract, isDisabled }) {
           />}
       </div>
       <div className='flex flex-col items-center'>
-        {hasActiveBid ? <Button variant="faded" color="danger" onClick={() => _cancelBid?.()}>Cancel Bid</Button> : <Button variant="faded" onClick={() => _makeBid?.()} isDisabled={!(bid > 0 && isConnected) || hasActiveBid == null}>Make Bid</Button>}
+        {hasActiveBid ? <Button variant="faded" color="danger" onClick={() => _cancelBid(simulateCancelBid?.request)}>Cancel Bid</Button> : <Button variant="faded" onClick={() => _makeBid( simulateBid?.request)} isDisabled={!(bid > 0 && isConnected) || hasActiveBid == null}>Make Bid</Button>}
 
       </div>
     </div>

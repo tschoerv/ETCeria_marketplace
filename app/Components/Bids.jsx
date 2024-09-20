@@ -1,9 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { useContractRead, useContractReads, useAccount } from 'wagmi'
+import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import ETCeriaMarketplace_ABI from "../ABI/ETCeria_marketplace_ABI.json";
 import { ethers } from 'ethers';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link, Spinner } from "@nextui-org/react";
+import { useQueryClient } from '@tanstack/react-query'
+import { useQueryTrigger } from '../QueryTriggerContext';
+import { Web3 } from 'web3';
 
 const columns = [
   { key: 'bidder', label: 'Bidder' },
@@ -44,23 +47,100 @@ function arraysEqual(a, b) {
   return true;
 }
 
-export default function Bids({ refreshBidsList, tableList, setTableList, marketplaceContract }) {
-  const [bidders, setBidders] = useState([]);
+function formatAddress(address, length) {
+  if(address){
+      return address.length > 10 ? `${address.slice(0, length/2)}...${address.slice(-length/2)}` : address;
+  }
+}
+
+function convertWeb3ArrayToWagmiFormat(web3Outputs) {
+  return web3Outputs.map(web3Output => {
+    const transformed = [];
+
+    for (let i = 0; i < web3Output.__length__; i++) {
+      if (web3Output.hasOwnProperty(i)) {
+        const value = web3Output[i];
+
+        if (i === 0) {
+          transformed.push(value);
+        } else {
+          transformed.push(typeof value === 'bigint' ? Number(value) : value);
+        }
+      }
+    }
+
+    return {
+      result: transformed
+    };
+  });
+}
+
+export default function Bids({ tableList, setTableList, marketplaceContract }) {
+  const [bidders, setBidders] = useState([1]);
   const [bidList, setBidList] = useState([]);
   const [bidType, setBidType] = useState([]);
-  const { address, isConnected } = useAccount();
+  const [tableIsLoading, setTableIsLoading] = React.useState(true);
+  const { isConnected } = useAccount();
 
-  const { data: _bidders } = useContractRead({
+  const { queryTrigger, toggleQueryTrigger } = useQueryTrigger();
+  const queryClient = useQueryClient()
+
+  const rivetApiKey = process.env.NEXT_PUBLIC_RIVET_API_KEY;
+  const rivetUrl = `https://etc.rpc.rivet.cloud/${rivetApiKey}`;
+
+  const web3 = new Web3(rivetUrl);
+  const contract = new web3.eth.Contract(ETCeriaMarketplace_ABI, marketplaceContract);
+
+  const isMobile = window.innerWidth <= 768;
+
+  useEffect(() => {
+    const fetchBidders = async () => {
+      try {
+        if (!isConnected) {
+          const biddersData = await contract.methods.getBidders().call()
+          setBidders(biddersData);
+        }
+      } catch (error) {
+        console.error('Error fetching bidders:', error);
+      }
+    };
+
+    fetchBidders();
+  }, []);
+
+  const { data: biddersData, isSuccess: isSuccessBiddersData, queryKey: biddersDataQueryKey } = useReadContract({
     address: marketplaceContract,
     abi: ETCeriaMarketplace_ABI,
     functionName: 'getBidders',
-    watch: true,
-    onSuccess(_bidders) {
-      setBidders(_bidders)
-    },
   });
 
-  const { data: _bidList } = useContractReads({
+  useEffect(() => {
+    if (isSuccessBiddersData) {
+      setBidders(biddersData)
+    }
+  }, [biddersData, isSuccessBiddersData]);
+
+  useEffect(() => {
+    const fetchBidList = async () => {
+      try {
+        if (!isConnected && bidders[0] != 1) {
+          const allBids = await Promise.all(bidders.map(async (bidder) => {
+            const bidListData = await contract.methods.bidOf(bidder).call();
+            return bidListData;
+          }));
+          setBidList(convertWeb3ArrayToWagmiFormat(allBids));
+        }
+
+      } catch (error) {
+        console.error('Error fetching bid list:', error);
+      }
+    };
+
+    fetchBidList();
+  }, [bidders]);
+
+
+  const { data: bidListData, isSuccess: isSuccessBidListData, queryKey: bidListDataQueryKey } = useReadContracts({
     contracts:
       bidders.map((tile) => ({
         address: marketplaceContract,
@@ -68,17 +148,24 @@ export default function Bids({ refreshBidsList, tableList, setTableList, marketp
         functionName: 'bidOf',
         args: [tile],
       })),
-
-    watch: true,
-    enabled: bidders,
-    allowFailure: true,
-    onSuccess(_bidList) {
-      setBidList(_bidList)
-    },
-  })
+  });
 
   useEffect(() => {
-    if (bidList && bidList.length > 0) {
+    if (isSuccessBidListData) {
+      setBidList(bidListData)
+    }
+  }, [bidListData, isSuccessBidListData]);
+
+  useEffect(() => {
+    if (bidders[0] == undefined) {
+      setTableIsLoading(false);
+      setTableList([]);
+      setBidType([]);
+    }
+  }, [bidders]);
+
+  useEffect(() => {
+    if (bidList && bidders[0] != 1) {
       setTableList(bidList.map((item, index) => {
         // Create a copy of the result array and add the new value
         const _tableList = [...item.result ?? [], bidders[index]];
@@ -86,6 +173,7 @@ export default function Bids({ refreshBidsList, tableList, setTableList, marketp
         // Return a new object with the updated result
         return { ...item, result: _tableList };
       }));
+
 
       setBidType(bidList.map(bid => {
         const bidInfo = bid.result?.slice(1, 9);
@@ -118,18 +206,24 @@ export default function Bids({ refreshBidsList, tableList, setTableList, marketp
           return "Custom";
         }
       }));
-
+      setTableIsLoading(false)
     }
+  }, [bidList]);
 
-  }, [bidList, refreshBidsList, address])
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ bidListDataQueryKey })
+    queryClient.invalidateQueries({ biddersDataQueryKey })
+  }, [queryTrigger]);
 
   return (
     <div>
-      <Table topContent="Bids" className='text-center border border-gray-500 rounded-2xl' aria-label="Table with bid data">
+      <Table topContent="Bids" className='text-center border border-gray-500 md:rounded-2xl rounded-none md:w-auto w-screen' aria-label="bids table" classNames={{wrapper: "md:rounded-2xl rounded-none"}}>
         <TableHeader columns={columns}>
           {(column) => <TableColumn className='bg-green-300' width="auto" key={column.key}>{column.label}</TableColumn>}
         </TableHeader>
-        <TableBody emptyContent={"No bids available."}>
+        <TableBody emptyContent={"No bids available."} isLoading={tableIsLoading}
+          loadingContent={<Spinner size="md" color="default" label="fetching data from the blockchain..." />}>
           {tableList ? [...tableList] // Create a copy of tableList to avoid mutating the original array
             .sort((a, b) => parseFloat(ethers.formatEther(b.result[0])) - parseFloat(ethers.formatEther(a.result[0]))) // Sort in descending order
             .map((bid, index) => (
@@ -137,7 +231,7 @@ export default function Bids({ refreshBidsList, tableList, setTableList, marketp
                 {/* Mapping each value in the bid.result array to a TableCell */}
                 <TableCell>
                   <Link isExternal color="secondary" href={`https://etc.blockscout.com/address/${bid?.result[10]}`}>
-                    {bid.result[10]}
+                    {isMobile ? formatAddress(bid.result[10], 20) : formatAddress(bid.result[10], 26)}
                   </Link>
                 </TableCell>
                 <TableCell >{(() => {

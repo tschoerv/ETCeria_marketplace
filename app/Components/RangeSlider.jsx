@@ -61,6 +61,8 @@ const RangeSlider = forwardRef(({ initialMin, initialMax, min, max, step, priceC
     setMinValue(initialMin);
     setMinInputValue(initialMin);
     setMaxValue(initialMax);
+    minValueRef.current = initialMin;
+      maxValueRef.current = initialMax;
   }, [initialMin, initialMax, renderSliderTrigger]);
 
 

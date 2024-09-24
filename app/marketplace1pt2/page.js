@@ -156,7 +156,7 @@ export default function Marketplace1pt2() {
               <SetAsk ownerList={ownerList} setOwnerList={setOwnerList} bidTableList={bidTableList} marketplaceContract={ETCeriaMP1pt2_address} isDisabled={isDisabled} />
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="componentBackground3 m-3 md:ml-2 ml-0 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="componentBackground3 m-3 text-left text-inherit no-underline border border-black rounded-lg max-w-xs">
             <Bidding marketplaceContract={ETCeriaMP1pt2_address} isDisabled={isDisabled} />
           </div>
         </div>

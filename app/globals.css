@@ -54,6 +54,8 @@ body {
   background-color: #dfc9aa;
   margin: 0.5rem;
   padding: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   text-align: left;
   text-decoration: none;
   border: 1px solid black;

@@ -2,8 +2,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
-import Image from 'next/image';
-import { Link } from "@nextui-org/react";
 
 const inter = Inter({ subsets: ["latin"] });
 

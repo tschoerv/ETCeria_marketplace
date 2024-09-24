@@ -49,17 +49,17 @@ export default function Home() {
           <div style={{ display: 'flex', flexDirection: flexDirection, alignItems: 'center' }}>
             <Link className="card" href="/marketplace1pt1">
               <h2>Marketplace v1.1 &rarr;</h2>
-              <p>&nbsp;buy and sell ETCeria tiles</p>
+              <p>buy and sell v1.1 tiles</p>
             </Link>
 
             <Link className="card" href="/marketplace1pt2">
               <h2>Marketplace v1.2 &rarr;</h2>
-              <p>&nbsp;buy and sell ETCeria tiles</p>
+              <p>buy and sell v1.2 tiles</p>
             </Link>
           </div>
           <Link className="card" href="/tilemanager">
             <h2>Tile Manager &rarr;</h2>
-            <p>&nbsp;transfer your ETCeria tiles</p>
+            <p>transfer your tiles</p>
           </Link>
 
           <div className="faq">
